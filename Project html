@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Bus Info Card - uStack 2026</title>
+  <style>
+    /* Week 1 il padichu undakkiyatha */
+    body {
+      background-color: #f5f5f5;
+      font-family: Arial;
+      text-align: center;
+      padding: 20px;
+    }
+    .card {
+      background-color: white;
+      width: 300px;
+      margin: 15px auto;
+      padding: 20px;
+      border: 2px solid black;
+      border-radius: 8px;
+    }
+    .bus-box {
+      width: 100%;
+      height: 140px;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: bold;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+    button {
+      background-color: green;
+      color: white;
+      padding: 12px 25px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>My Bus Project</h1>
+
+  <!-- Bus 1: KSRTC -->
+  <div class="card">
+    <h3>KSRTC Bus</h3>
+    <div class="bus-box" style="background-color: blue;">
+      SUPER FAST
+    </div>
+    <p><b>Name:</b> Super Fast</p>
+    <p><b>Route:</b> Munnar to Ooty</p>
+    <button onclick="hornSound(©KSRTC Bus Ready!©)">Horn Adikku</button>
+  </div>
+
+  <!-- Bus 2: Private Bus -->
+  <div class="card">
+    <h3>Private Bus</h3>
+    <div class="bus-box" style="background-color: red;">
+      KALLADA G1
+    </div>
+    <p><b>Name:</b> Kallada G1</p>
+    <p><b>Route:</b> Kottayam to Bangalore</p>
+    <button onclick="hornSound(©Private Bus Ready!©)">Horn Adikku</button>
+  </div>
+  <script>
+    function hornSound(message) {
+      alert(message);
+    }
+  </script>
+
+</body>
+</html>
