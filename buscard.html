@@ -1,15 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Bus Info Card - uStack 2026</title>
+  <title>Bus Info Card - μStack 2026</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    
     body {
-      background-color: #f5f5f5;
+      background-color: #f0f0f0;
       font-family: Arial;
       text-align: center;
       padding: 20px;
     }
+    
+    h1 {
+      color: #333;
+    }
+    
+    /* Main container */
+    main {
+      margin-top: 20px;
+    }
+    
+    /* Card styling */
     .card {
       background-color: white;
       width: 300px;
@@ -18,6 +29,7 @@
       border: 2px solid black;
       border-radius: 8px;
     }
+    
     .bus-box {
       width: 100%;
       height: 140px;
@@ -30,6 +42,7 @@
       border-radius: 8px;
       margin-bottom: 15px;
     }
+    
     button {
       background-color: green;
       color: white;
@@ -39,37 +52,85 @@
       border-radius: 4px;
       cursor: pointer;
       font-size: 15px;
+      width: 100%;
+    }
+    
+    button:hover {
+      background-color: darkgreen;
+    }
+    
+    /* Responsive for mobile */
+    @media (max-width: 600px) {
+      .card {
+        width: 90%;
+      }
     }
   </style>
 </head>
 <body>
 
-  <h1>project 1</h1>
+  <!-- Semantic HTML: header -->
+  <header>
+    <h1>μStack Project 1</h1>
+    <p>My Bus Card Project</p>
+  </header>
 
-  
-  <div class="card">
-    <h3>KSRTC Bus</h3>
-    <div class="bus-box" style="background-color: blue;">
-      SUPER FAST
-    </div>
-    <p><b>Name:</b> Super Fast</p>
-    <p><b>Route:</b> Munnar to Ooty</p>
-    <button onclick="hornSound(©KSRTC Bus Ready!©)">Horn Adikku</button>
-  </div>
+  <!-- Semantic HTML: main -->
+  <main>
+    
+    <!-- Semantic HTML: article -->
+    <article class="card">
+      <header>
+        <h2>KSRTC Bus</h2>
+      </header>
+      
+      <section class="bus-box" style="background-color: blue;">
+        SUPER FAST
+      </section>
+      
+      <section>
+        <p><b>Name:</b> Super Fast</p>
+        <p><b>Route:</b> Munnar to Ooty</p>
+        <p><b>Type:</b> Government</p>
+      </section>
+      
+      <footer>
+        <button onclick="hornSound('KSRTC Bus Ready!')">Horn Adikku</button>
+      </footer>
+    </article>
 
-  
-  <div class="card">
-    <h3>Private Bus</h3>
-    <div class="bus-box" style="background-color: red;">
-      KALLADA G1
-    </div>
-    <p><b>Name:</b> Kallada G1</p>
-    <p><b>Route:</b> Kottayam to Bangalore</p>
-    <button onclick="hornSound(©Private Bus Ready!©)">Horn Adikku</button>
-  </div>
+    <!-- Semantic HTML: article -->
+    <article class="card">
+      <header>
+        <h2>Private Bus</h2>
+      </header>
+      
+      <section class="bus-box" style="background-color: red;">
+        KALLADA G1
+      </section>
+      
+      <section>
+        <p><b>Name:</b> Kallada G1</p>
+        <p><b>Route:</b> Kottayam to Bangalore</p>
+        <p><b>Type:</b> Private</p>
+      </section>
+      
+      <footer>
+        <button onclick="hornSound('Private Bus Ready!')">Horn Adikku</button>
+      </footer>
+    </article>
+    
+  </main>
+
+  <!-- Semantic HTML: footer -->
+  <footer>
+    <p>Created by Devadath | μStack 2026</p>
+  </footer>
+
+  <!-- Basic JS -->
   <script>
-    function hornSound(message) {
-      alert(message);
+    function hornSound(msg) {
+      alert(msg);
     }
   </script>
 
