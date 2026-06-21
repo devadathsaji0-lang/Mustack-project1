@@ -15,16 +15,17 @@
       color: #333;
     }
     
-    /* Main container */
     main {
       margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
     }
     
-    /* Card styling */
     .card {
       background-color: white;
       width: 300px;
-      margin: 15px auto;
+      margin: 15px;
       padding: 20px;
       border: 2px solid black;
       border-radius: 8px;
@@ -59,7 +60,12 @@
       background-color: darkgreen;
     }
     
-    /* Responsive for mobile */
+    .loading {
+      font-size: 18px;
+      color: gray;
+      margin-top: 50px;
+    }
+    
     @media (max-width: 600px) {
       .card {
         width: 90%;
@@ -69,69 +75,80 @@
 </head>
 <body>
 
-  <!-- Semantic HTML: header -->
   <header>
     <h1>μStack Project 1</h1>
-    <p>Bus Card Project</p>
+    <p>Bus Card Project - Live from MongoDB</p>
   </header>
 
-  <!-- Semantic HTML: main -->
-  <main>
-    
-    <!-- Semantic HTML: article -->
-    <article class="card">
-      <header>
-        <h2>KSRTC Bus</h2>
-      </header>
-      
-      <section class="bus-box" style="background-color: blue;">
-        SUPER FAST
-      </section>
-      
-      <section>
-        <p><b>Name:</b> Super Fast</p>
-        <p><b>Route:</b> Munnar to Ooty</p>
-        <p><b>Type:</b> Government</p>
-      </section>
-      
-      <footer>
-        <button onclick="hornSound('KSRTC Bus Ready!')">Horn Adikku</button>
-      </footer>
-    </article>
-
-    <!-- Semantic HTML: article -->
-    <article class="card">
-      <header>
-        <h2>Private Bus</h2>
-      </header>
-      
-      <section class="bus-box" style="background-color: red;">
-        KALLADA G1
-      </section>
-      
-      <section>
-        <p><b>Name:</b> Kallada G1</p>
-        <p><b>Route:</b> Kottayam to Bangalore</p>
-        <p><b>Type:</b> Private</p>
-      </section>
-      
-      <footer>
-        <button onclick="hornSound('Private Bus Ready!')">Horn Adikku</button>
-      </footer>
-    </article>
-    
+  <main id="busContainer">
+    <p class="loading">Bus data load ആവുന്നു...</p>
   </main>
 
-  <!-- Semantic HTML: footer -->
   <footer>
     <p>Created by Devadath | μStack 2026</p>
   </footer>
 
-  <!-- Basic JS -->
   <script>
+    const API_URL = 'https://bus-backend-rtut.onrender.com/api/bus';
+    const container = document.getElementById('busContainer');
+
     function hornSound(msg) {
       alert(msg);
     }
+
+    // Random color generator for bus box
+    function getRandomColor() {
+      const colors = ['blue', 'red', 'green', 'purple', 'orange', 'teal'];
+      return colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    // Fetch buses from backend
+    async function loadBuses() {
+      try {
+        const res = await fetch(API_URL);
+        const buses = await res.json();
+
+        if (buses.length === 0) {
+          container.innerHTML = '<p class="loading">ഇപ്പൊ bus ഒന്നുമില്ല bro. MongoDB-ൽ add ചെയ്യ്!</p>';
+          return;
+        }
+
+        container.innerHTML = ''; // loading text clear ചെയ്യ്
+
+        buses.forEach(bus => {
+          const color = getRandomColor();
+          const card = `
+            <article class="card">
+              <header>
+                <h2>${bus.busNumber || 'Bus'}</h2>
+              </header>
+              
+              <section class="bus-box" style="background-color: ${color};">
+                ${bus.route || 'No Route'}
+              </section>
+              
+              <section>
+                <p><b>Bus No:</b> ${bus.busNumber}</p>
+                <p><b>Route:</b> ${bus.route}</p>
+                <p><b>Time:</b> ${bus.time}</p>
+              </section>
+              
+              <footer>
+                <button onclick="hornSound('${bus.busNumber} Ready!')">Horn Adikku</button>
+              </footer>
+            </article>
+          `;
+          container.innerHTML += card;
+        });
+
+      } catch (err) {
+        container.innerHTML = `<p style="color:red">Error: ${err.message}. Backend online ആണോന്ന് check ചെയ്യ്!</p>`;
+        console.error(err);
+      }
+    }
+
+    // Page load ആകുമ്പോൾ bus data എടുക്കും
+    loadBuses();
   </script>
 
 </body>
