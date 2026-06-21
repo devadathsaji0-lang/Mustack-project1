@@ -60,6 +60,21 @@
       background-color: darkgreen;
     }
     
+    button:disabled {
+      background-color: gray;
+      cursor: not-allowed;
+    }
+    
+    .seats {
+      font-weight: bold;
+      color: #333;
+      margin: 8px 0;
+    }
+    
+    .full {
+      color: red;
+    }
+    
     .loading {
       font-size: 18px;
       color: gray;
@@ -96,10 +111,35 @@
       alert(msg);
     }
 
-    // Random color generator for bus box
+    // Random color generator
     function getRandomColor() {
       const colors = ['blue', 'red', 'green', 'purple', 'orange', 'teal'];
       return colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    // Spot booking function
+    async function bookSeat(id, isFull) {
+      if (isFull) {
+        alert('Seats full ആയി bro 😢');
+        return;
+      }
+      
+      try {
+        const res = await fetch(`https://bus-backend-rtut.onrender.com/api/book/${id}`, {
+          method: 'PUT'
+        });
+        
+        const data = await res.json();
+        
+        if (res.ok) {
+          alert('Seat booked ✅ ' + data.msg);
+          loadBuses(); // Refresh ചെയ്ത് count update ചെയ്യും
+        } else {
+          alert('Error: ' + data.error);
+        }
+      } catch (err) {
+        alert('Network error: ' + err.message);
+      }
     }
 
     // Fetch buses from backend
@@ -117,6 +157,11 @@
 
         buses.forEach(bus => {
           const color = getRandomColor();
+          const totalSeats = bus.totalSeats || 40;
+          const bookedSeats = bus.bookedSeats || 0;
+          const available = totalSeats - bookedSeats;
+          const isFull = available <= 0;
+          
           const card = `
             <article class="card">
               <header>
@@ -124,17 +169,24 @@
               </header>
               
               <section class="bus-box" style="background-color: ${color};">
-                ${bus.route || 'No Route'}
+                ${bus.from || 'Kochi'} → ${bus.to || 'Trivandrum'}
               </section>
               
               <section>
                 <p><b>Bus No:</b> ${bus.busNumber}</p>
-                <p><b>Route:</b> ${bus.route}</p>
+                <p><b>Route:</b> ${bus.from || 'Kochi'} → ${bus.to || 'Trivandrum'}</p>
                 <p><b>Time:</b> ${bus.time}</p>
+                <p><b>Fare:</b> ₹${bus.fare || 0}</p>
+                <p class="seats ${isFull ? 'full' : ''}">
+                  <b>Seats:</b> ${bookedSeats}/${totalSeats} Booked | ${available} Available
+                </p>
               </section>
               
               <footer>
                 <button onclick="hornSound('${bus.busNumber} Ready!')">Horn Adikku</button>
+                <button onclick="bookSeat('${bus._id}', ${isFull})" ${isFull ? 'disabled' : ''}>
+                  ${isFull ? 'Seats Full' : 'Book Seat'}
+                </button>
               </footer>
             </article>
           `;
