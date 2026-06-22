@@ -1,139 +1,142 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Bus Info Card - μStack 2026</title>
+  <title>Bus Booking System - μStack 2026</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       background-color: #f0f0f0;
       font-family: Arial;
-      text-align: center;
       padding: 20px;
+      margin: 0;
     }
     
-    h1 {
-      color: #333;
-    }
+    h1, p { text-align: center; color: #333; }
     
-    main {
-      margin-top: 20px;
+    /* Top Buttons Row */
+    .button-row {
       display: flex;
       flex-wrap: wrap;
+      gap: 10px;
       justify-content: center;
+      margin: 20px 0;
     }
     
-    .card {
-      background-color: white;
-      width: 300px;
-      margin: 15px;
-      padding: 20px;
-      border: 2px solid black;
-      border-radius: 8px;
+    .button-row button {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
     }
     
-    .bus-box {
+    .button-row button:hover {
+      background-color: #0056b3;
+    }
+    
+    /* Table Style */
+    table {
       width: 100%;
-      height: 140px;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      font-weight: bold;
-      border-radius: 8px;
-      margin-bottom: 15px;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-top: 20px;
+      overflow-x: auto;
     }
     
-    button {
-      background-color: green;
+    th {
+      background-color: #333;
       color: white;
-      padding: 12px 25px;
-      margin-top: 10px;
+      padding: 12px;
+      text-align: center;
+    }
+    
+    td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+    
+    tr:nth-child(even) { background-color: #f9f9f9; }
+    
+    .full { color: red; font-weight: bold; }
+    .available { color: green; font-weight: bold; }
+    
+    td button {
+      padding: 6px 12px;
+      margin: 2px;
       border: none;
       border-radius: 4px;
       cursor: pointer;
-      font-size: 15px;
-      width: 100%;
+      font-size: 12px;
     }
     
-    button:hover {
-      background-color: darkgreen;
-    }
+    .book-btn { background: green; color: white; }
+    .spot-btn { background: orange; color: white; }
+    .print-btn { background: #6c757d; color: white; }
     
-    button:disabled {
-      background-color: gray;
+    td button:disabled {
+      background: gray !important;
       cursor: not-allowed;
     }
     
-    .seats {
-      font-weight: bold;
-      color: #333;
-      margin: 8px 0;
-    }
+    .loading { text-align: center; padding: 50px; font-size: 18px; }
     
-    .full {
-      color: red;
-    }
-    
-    .loading {
-      font-size: 18px;
-      color: gray;
-      margin-top: 50px;
-    }
-    
-    @media (max-width: 600px) {
-      .card {
-        width: 90%;
-      }
+    @media (max-width: 768px) {
+      table { font-size: 12px; }
+      td, th { padding: 6px; }
     }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>μStack Project 1</h1>
-    <p>Bus Card Project - Live from MongoDB</p>
+    <h1>μStack Bus Booking System</h1>
+    <p>Live from MongoDB - Devadath | μStack 2026</p>
   </header>
 
-  <main id="busContainer">
+  <!-- Top Buttons - നീ ചോദിച്ചത് -->
+  <div class="button-row">
+    <button onclick="alert('Online Booking Panel Open ആവും')">Online Booking</button>
+    <button onclick="alert('Spot Booking Panel Open ആവും')">Spot Booking</button>
+    <button onclick="loadBuses()">Refresh Availability</button>
+    <button onclick="alert('All Bus Timings കാണിക്കും')">Bus Timing</button>
+    <button onclick="alert('Route Map കാണിക്കും')">Route</button>
+    <button onclick="alert('Price List കാണിക്കും')">Ticket Price Type</button>
+  </div>
+
+  <main id="tableContainer">
     <p class="loading">Bus data load ആവുന്നു...</p>
   </main>
 
   <footer>
-    <p>Created by Devadath | μStack 2026</p>
+    <p style="text-align:center; margin-top:30px;">Created by Devadath | μStack 2026</p>
   </footer>
 
   <script>
-    const API_URL = 'https://bus-backend-rtut.onrender.com/api/bus';
-    const container = document.getElementById('busContainer');
-
+    const API_URL = 'https://bus-backend-rtut.onrender.com/api/buses';
+    
+    // Horn sound
     function hornSound(msg) {
-      alert(msg);
+      alert('📢 ' + msg + ' Ready!');
     }
 
-    // Random color generator
-    function getRandomColor() {
-      const colors = ['blue', 'red', 'green', 'purple', 'orange', 'teal'];
-      return colors[Math.floor(Math.random() * colors.length)];
-    }
-
-    // Spot booking function
-    async function bookSeat(id, isFull) {
-      if (isFull) {
-        alert('Seats full ആയി bro 😢');
-        return;
-      }
-      
+    // Spot/Online Booking function
+    async function bookSeat(id, type) {
       try {
         const res = await fetch(`https://bus-backend-rtut.onrender.com/api/book/${id}`, {
-          method: 'PUT'
+          method: 'PUT',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({type: type})
         });
         
         const data = await res.json();
         
         if (res.ok) {
-          alert('Seat booked ✅ ' + data.msg);
-          loadBuses(); // Refresh ചെയ്ത് count update ചെയ്യും
+          alert(`${type} Success ✅ Seats: ${data.available} remaining`);
+          loadBuses();
         } else {
           alert('Error: ' + data.error);
         }
@@ -142,64 +145,95 @@
       }
     }
 
-    // Fetch buses from backend
+    // Print Ticket function
+    function printTicket(busNo, route, time, fare) {
+      const printContent = `
+        <h2>μStack Bus Ticket</h2>
+        <hr>
+        <p><b>Bus No:</b> ${busNo}</p>
+        <p><b>Route:</b> ${route}</p>
+        <p><b>Time:</b> ${time}</p>
+        <p><b>Fare:</b> ₹${fare}</p>
+        <p><b>Date:</b> ${new Date().toLocaleDateString()}</p>
+        <hr>
+        <p>Happy Journey! μStack 2026</p>
+      `;
+      const w = window.open('', '', 'height=600,width=400');
+      w.document.write(printContent);
+      w.document.close();
+      w.print();
+    }
+
+    // Fetch and show table
     async function loadBuses() {
+      const container = document.getElementById('tableContainer');
       try {
         const res = await fetch(API_URL);
         const buses = await res.json();
 
         if (buses.length === 0) {
-          container.innerHTML = '<p class="loading">ഇപ്പൊ bus ഒന്നുമില്ല bro. MongoDB-ൽ add ചെയ്യ്!</p>';
+          container.innerHTML = '<p class="loading">MongoDB-ൽ bus data ഇല്ല bro. Add ചെയ്യ്!</p>';
           return;
         }
 
-        container.innerHTML = ''; // loading text clear ചെയ്യ്
+        let table = `
+          <table>
+            <thead>
+              <tr>
+                <th>Bus No</th>
+                <th>Route</th>
+                <th>Bus Timing</th>
+                <th>Available Seats Count</th>
+                <th>Ticket Price Type</th>
+                <th>Online Booking</th>
+                <th>Spot Booking</th>
+                <th>Print Out Ticket</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
 
         buses.forEach(bus => {
-          const color = getRandomColor();
-          const totalSeats = bus.totalSeats || 40;
-          const bookedSeats = bus.bookedSeats || 0;
-          const available = totalSeats - bookedSeats;
+          const total = bus.totalSeats || 40;
+          const booked = bus.bookedSeats || 0;
+          const available = total - booked;
           const isFull = available <= 0;
+          const route = `${bus.from || 'Kochi'} → ${bus.to || 'Trivandrum'}`;
           
-          const card = `
-            <article class="card">
-              <header>
-                <h2>${bus.busNumber || 'Bus'}</h2>
-              </header>
-              
-              <section class="bus-box" style="background-color: ${color};">
-                ${bus.from || 'Kochi'} → ${bus.to || 'Trivandrum'}
-              </section>
-              
-              <section>
-                <p><b>Bus No:</b> ${bus.busNumber}</p>
-                <p><b>Route:</b> ${bus.from || 'Kochi'} → ${bus.to || 'Trivandrum'}</p>
-                <p><b>Time:</b> ${bus.time}</p>
-                <p><b>Fare:</b> ₹${bus.fare || 0}</p>
-                <p class="seats ${isFull ? 'full' : ''}">
-                  <b>Seats:</b> ${bookedSeats}/${totalSeats} Booked | ${available} Available
-                </p>
-              </section>
-              
-              <footer>
-                <button onclick="hornSound('${bus.busNumber} Ready!')">Horn Adikku</button>
-                <button onclick="bookSeat('${bus._id}', ${isFull})" ${isFull ? 'disabled' : ''}>
-                  ${isFull ? 'Seats Full' : 'Book Seat'}
+          table += `
+            <tr>
+              <td>${bus.busNumber}</td>
+              <td>${route}</td>
+              <td>${bus.time}</td>
+              <td class="${isFull ? 'full' : 'available'}">${available}/${total}</td>
+              <td>Normal ₹${bus.fare || 0}</td>
+              <td>
+                <button class="book-btn" onclick="bookSeat('${bus._id}', 'Online')" ${isFull ? 'disabled' : ''}>
+                  ${isFull ? 'Full' : 'Book Online'}
                 </button>
-              </footer>
-            </article>
+              </td>
+              <td>
+                <button class="spot-btn" onclick="bookSeat('${bus._id}', 'Spot')" ${isFull ? 'disabled' : ''}>
+                  ${isFull ? 'Full' : 'Spot Book'}
+                </button>
+              </td>
+              <td>
+                <button class="print-btn" onclick="printTicket('${bus.busNumber}', '${route}', '${bus.time}', ${bus.fare})">
+                  Print Ticket
+                </button>
+              </td>
+            </tr>
           `;
-          container.innerHTML += card;
         });
 
+        table += `</tbody></table>`;
+        container.innerHTML = table;
+
       } catch (err) {
-        container.innerHTML = `<p style="color:red">Error: ${err.message}. Backend online ആണോന്ന് check ചെയ്യ്!</p>`;
-        console.error(err);
+        container.innerHTML = `<p style="color:red; text-align:center">Error: ${err.message}. Backend check ചെയ്യ്!</p>`;
       }
     }
 
-    // Page load ആകുമ്പോൾ bus data എടുക്കും
     loadBuses();
   </script>
 
