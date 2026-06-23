@@ -67,23 +67,26 @@
         const booked = bus.bookedSeats || 0;
         const available = total - booked;
         
-        let busCategory = bus.type.toLowerCase().includes('ksrtc') || bus.type.toLowerCase().includes('government') ? 'Government' : 'Private';
+        // Safe check - type ഇല്ലെങ്കിൽ Private ആക്കും
+        let busTypeLower = bus.type ? bus.type.toLowerCase() : '';
+        let busCategory = busTypeLower.includes('ksrtc') || busTypeLower.includes('government') ? 'Government' : 'Private';
+        let busName = bus.type || 'Normal Bus';
         
         document.getElementById('modalBody').innerHTML = `
           <p style="font-size:22px;"><b>Bus No:</b> ${bus.busNumber}</p>
-          <p style="font-size:18px;"><b>Name:</b> ${bus.type}</p>
+          <p style="font-size:18px;"><b>Name:</b> ${busName}</p>
           <p style="font-size:18px;"><b>Type:</b> ${busCategory}</p>
           
           <hr style="margin:25px 0;">
           
           ${available > 0 ? 
             `<div class="btn-group">
-              <button onclick="bookSeat('${bus._id}', '${bus.busNumber}', ${bus.fare}, 'online', '${bus.type}')" 
+              <button onclick="bookSeat('${bus._id}', '${bus.busNumber}', ${bus.fare}, 'online', '${busName}')" 
                 style="background:#28a745;color:white;padding:16px;border:none;border-radius:8px;font-size:15px;cursor:pointer;flex:1;">
                 🎫 Online<br><b>₹${bus.fare}</b>
               </button>
               
-              <button onclick="bookSeat('${bus._id}', '${bus.busNumber}', ${bus.spotFare}, 'offline', '${bus.type}')" 
+              <button onclick="bookSeat('${bus._id}', '${bus.busNumber}', ${bus.spotFare}, 'offline', '${busName}')" 
                 style="background:#ff9800;color:white;padding:16px;border:none;border-radius:8px;font-size:15px;cursor:pointer;flex:1;">
                 🚌 Offline<br><b>₹${bus.spotFare}</b>
               </button>
