@@ -3,6 +3,7 @@
 <head>
   <title>Bus Booking System - μStack 2026</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   <style>
     body {background-color: #f0f0f0; font-family: Arial; padding: 20px; margin: 0;}
     h1, p { text-align: center; color: #333; }
@@ -18,13 +19,17 @@
     button:hover:not(:disabled) {opacity: 0.9; transform: scale(1.02);}
     button:disabled {cursor: not-allowed;}
     
-    .modal {display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);}
-    .modal-content {background-color: white; margin: 8% auto; padding: 30px; border-radius: 10px; width: 85%; max-width: 400px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3);}
+    .modal {display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); overflow-y: auto;}
+    .modal-content {background-color: white; margin: 5% auto; padding: 25px; border-radius: 12px; width: 90%; max-width: 420px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.3);}
     .close {color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;}
     .close:hover {color: black;}
-    .modal h2 {color: #333; margin-top: 0;}
-    .modal p {font-size: 18px; margin: 15px 0;}
-    .btn-group {display: flex; gap: 12px; margin-top: 25px;}
+    .modal h2 {color: #007bff; margin-top: 0;}
+    .modal p {font-size: 18px; margin: 12px 0;}
+    .btn-group {display: flex; gap: 12px; margin-top: 20px;}
+    .input-group {margin: 15px 0; text-align: left;}
+    .input-group label {display: block; font-weight: bold; margin-bottom: 5px; color: #333;}
+    .input-group input, .input-group select {width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 16px; box-sizing: border-box;}
+    .input-group input:focus {border-color: #007bff; outline: none;}
     @media (max-width: 768px) {
       table {font-size: 11px;}
       td, th {padding: 6px;}
@@ -58,29 +63,45 @@
 
   <script>
     const API_URL = 'https://bus-backend-rtut.onrender.com/api/buses';
+    let currentBus = null;
 
     async function showDetails(busId) {
       try {
         const res = await fetch(`${API_URL}/${busId}`);
         const bus = await res.json();
+        currentBus = bus;
+        
         const total = bus.totalSeats || 40;
         const booked = bus.bookedSeats || 0;
         const available = total - booked;
         
-        // Safe check - type ഇല്ലെങ്കിൽ Private ആക്കും
-        let busTypeLower = bus.type ? bus.type.toLowerCase() : '';
-        let busCategory = busTypeLower.includes('ksrtc') || busTypeLower.includes('government') ? 'Government' : 'Private';
+        // 🔥 Safe check - type ഇല്ലെങ്കിൽ crash ആവില്ല
+        let busTypeLower = (bus.type || '').toLowerCase();
         let busName = bus.type || 'Normal Bus';
+        let busCategory = busTypeLower.includes('ksrtc') || busTypeLower.includes('government') ? 'Government' : 'Private';
+        
+        let seatOptions = '';
+        for(let i = 1; i <= available && i <= 40; i++) {
+          seatOptions += `<option value="A${i}">A${i}</option>`;
+        }
         
         document.getElementById('modalBody').innerHTML = `
           <p style="font-size:22px;"><b>Bus No:</b> ${bus.busNumber}</p>
           <p style="font-size:18px;"><b>Name:</b> ${busName}</p>
           <p style="font-size:18px;"><b>Type:</b> ${busCategory}</p>
-          
-          <hr style="margin:25px 0;">
+          <p style="font-size:16px; color: green;"><b>Available:</b> ${available}/${total} seats</p>
           
           ${available > 0 ? 
-            `<div class="btn-group">
+            `<div class="input-group">
+              <label>Passenger Name:</label>
+              <input type="text" id="passengerName" placeholder="Enter your name" required>
+            </div>
+            <div class="input-group">
+              <label>Select Seat:</label>
+              <select id="seatSelect">${seatOptions}</select>
+            </div>
+            <hr style="margin:20px 0;">
+            <div class="btn-group">
               <button onclick="bookSeat('${bus._id}', '${bus.busNumber}', ${bus.fare}, 'online', '${busName}')" 
                 style="background:#28a745;color:white;padding:16px;border:none;border-radius:8px;font-size:15px;cursor:pointer;flex:1;">
                 🎫 Online<br><b>₹${bus.fare}</b>
@@ -92,7 +113,7 @@
               </button>
             </div>` 
             : 
-            `<button disabled style="background:#dc3545;color:white;padding:16px;border:none;border-radius:8px;font-size:16px;width:100%;">
+            `<button disabled style="background:#dc3545;color:white;padding:16px;border:none;border-radius:8px;font-size:16px;width:100%; margin-top:20px;">
               ❌ No Seats Available
             </button>`
           }
@@ -106,6 +127,7 @@
 
     function closeModal() {
       document.getElementById('detailsModal').style.display = 'none';
+      currentBus = null;
     }
 
     window.onclick = function(event) {
@@ -132,11 +154,9 @@
               <tr>
                 <th>Bus No</th>
                 <th>Route</th>
-                <th>Bus Timing</th>
-                <th>Available Seats</th>
-                <th>Ticket Price Type</th>
-                <th>Total Seats</th>
-                <th>Booked Seats</th>
+                <th>Time</th>
+                <th>Available</th>
+                <th>Price</th>
                 <th>Type</th>
               </tr>
             </thead>
@@ -148,7 +168,7 @@
           const booked = bus.bookedSeats || 0;
           const available = total - booked;
           const isFull = available <= 0;
-          const route = `${bus.from || 'Munnar'} to ${bus.to || 'Ooty'}`;
+          const route = `${bus.from || 'Munnar'} → ${bus.to || 'Ooty'}`;
           
           table += `
             <tr>
@@ -160,8 +180,6 @@
                 Online: ₹${bus.fare}<br>
                 Spot: ₹${bus.spotFare}
               </td>
-              <td>${total}</td>
-              <td>${booked}</td>
               <td>${bus.type || 'Normal'}</td>
             </tr>
           `;
@@ -178,7 +196,15 @@
     loadBuses();
 
     async function bookSeat(busId, busNo, fare, type, busType) {
-      if(!confirm(`${type.toUpperCase()} Booking?\nBus: ${busNo}\nPrice: ₹${fare}`)) return;
+      const passengerName = document.getElementById('passengerName').value.trim();
+      const seatNo = document.getElementById('seatSelect').value;
+      
+      if(!passengerName) {
+        alert('❌ Passenger name enter ചെയ്യ് bro');
+        return;
+      }
+      
+      if(!confirm(`${type.toUpperCase()} Booking?\nBus: ${busNo}\nSeat: ${seatNo}\nName: ${passengerName}\nPrice: ₹${fare}`)) return;
       
       try {
         const res = await fetch(`https://bus-backend-rtut.onrender.com/api/book/${busId}?type=${type}`, {
@@ -187,10 +213,11 @@
         const data = await res.json();
         
         if(res.ok) {
-          alert(`✅ ${type.toUpperCase()} Ticket Booked!\nBus: ${busNo}\nFare: ₹${fare}`);
-          printTicket(busNo, fare, 'A1', type, busType);
+          alert(`✅ ${type.toUpperCase()} Ticket Booked!\nBus: ${busNo}\nSeat: ${seatNo}\nName: ${passengerName}`);
+          
+          printTicket(busNo, fare, seatNo, type, busType, passengerName);
           closeModal();
-          loadBuses();
+          setTimeout(() => loadBuses(), 1000);
         } else {
           alert('❌ ' + data.error);
         }
@@ -199,14 +226,16 @@
       }
     }
 
-    function printTicket(busNo, fare, seatNo, type, busType) {
+    function printTicket(busNo, fare, seatNo, type, busType, passengerName) {
       let today = new Date().toLocaleDateString();
       let time = new Date().toLocaleTimeString();
+      let ticketId = 'μS' + Date.now().toString().slice(-6);
       
       let ticketHTML = `
         <html>
           <head>
             <title>μStack Bus Ticket</title>
+            <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"><\/script>
             <style>
               body { font-family: Arial; padding: 20px; background: #f4f4f4; }
               .ticket { border: 3px dashed #007bff; padding: 25px; max-width: 320px; margin: auto; background: white; border-radius: 10px; }
@@ -214,23 +243,32 @@
               .row { margin: 12px 0; font-size: 16px; }
               .label { font-weight: bold; color: #333; }
               hr { border: 1px dashed #ccc; }
+              #qrcode { text-align: center; margin-top: 15px; }
             </style>
           </head>
           <body>
             <div class="ticket">
               <h2>🚌 μSTACK BUS TICKET</h2>
+              <p style="text-align:center; font-size:12px; margin-top:-10px;">Ticket ID: ${ticketId}</p>
               <hr>
+              <div class="row"><span class="label">Name:</span> ${passengerName}</div>
               <div class="row"><span class="label">Bus No:</span> ${busNo}</div>
-              <div class="row"><span class="label">Name:</span> ${busType}</div>
+              <div class="row"><span class="label">Bus Type:</span> ${busType}</div>
               <div class="row"><span class="label">Seat No:</span> ${seatNo}</div>
               <div class="row"><span class="label">Booking:</span> ${type.toUpperCase()}</div>
               <div class="row"><span class="label">Fare:</span> ₹${fare}</div>
               <div class="row"><span class="label">Date:</span> ${today}</div>
               <div class="row"><span class="label">Time:</span> ${time}</div>
               <hr>
-              <p style="text-align:center; font-size:12px; color: gray;">Created by Devadath | μStack 2026</p>
+              <div id="qrcode"></div>
+              <p style="text-align:center; font-size:12px; color: gray; margin-top:10px;">Created by Devadath | μStack 2026</p>
             </div>
-            <script>window.onload = function(){ window.print(); }<\/script>
+            <script>
+              QRCode.toCanvas(document.getElementById('qrcode'), '${ticketId}|${busNo}|${seatNo}|${passengerName}', function(error) {
+                if(error) console.error(error);
+                window.onload = function(){ setTimeout(() => window.print(), 500); }
+              });
+            <\/script>
           </body>
         </html>
       `;
