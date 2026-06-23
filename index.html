@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>μStack Project 1 - Home</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {font-family: Arial; text-align: center; padding: 20px; background: #f4f4f4; margin: 0;}
+.bus-card {border: 3px solid #333; padding: 25px; margin: 25px auto; max-width: 420px; border-radius: 15px; background: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1);}
+.bus-img {width: 100%; height: 160px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 26px; font-weight: bold;}
+.ksrtc {background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);}
+.private {background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);}
+.horn-btn {background: green; color: white; padding: 18px; width: 100%; border: none; font-size: 20px; cursor: pointer; border-radius: 8px; margin-top: 15px; font-weight: bold; transition: 0.3s;}
+.horn-btn:hover {background: darkgreen; transform: scale(1.03);}
+</style>
+</head>
+<body>
+<h1>μStack Project 1</h1>
+<h2>Bus Card Project - Devadath</h2>
+
+<div class="bus-card">
+  <h2>KSRTC Super Fast</h2>
+  <div class="bus-img ksrtc">🚌 SUPER FAST</div>
+  <p><b>Name:</b> Super Fast</p>
+  <p><b>Route:</b> Munnar to Ooty</p>
+  <p><b>Type:</b> Government</p>
+  <button class="horn-btn" onclick="hornAndGo()">🔊 Horn Adikku</button>
+</div>
+
+<div class="bus-card">
+  <h2>Private Kallada G1</h2>
+  <div class="bus-img private">🚌 KALLADA G1</div>
+  <p><b>Name:</b> Kallada G1</p>
+  <p><b>Route:</b> Kottayam to Bangalore</p>
+  <p><b>Type:</b> Private AC Sleeper</p>
+  <button class="horn-btn" onclick="hornAndGo()">🔊 Horn Adikku</button>
+</div>
+
+<script>
+function hornAndGo() {
+  alert('📢 Peeeeep! Bus Ready!');
+  setTimeout(() => {
+    window.location.href = 'buscard.html';
+  }, 800);
+}
+</script>
+</body>
+</html>
