@@ -9,9 +9,9 @@
     .back-btn {background: #6c757d; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 20px;}
     table {width: 100%; border-collapse: collapse; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-top: 20px;}
     th {background-color: #333; color: white; padding: 12px; text-align: center;}
-    td {padding: 10px; border: 1px solid #ddd; text-align: center; cursor: pointer;}
-    tr:hover {background: #e8f4f8 !important; transform: scale(1.01);}
-    tr:nth-child(even) { background-color: #f9f9f9; }
+    td {padding: 10px; border: 1px solid #ddd; text-align: center;}
+    .busno-cell {color: blue; font-weight: bold; cursor: pointer; text-decoration: underline;} /* Bus No മാത്രം click */
+    .busno-cell:hover {background: #e8f4f8;}
     .full { color: red; font-weight: bold; }
     .available { color: green; font-weight: bold; }
     .loading { text-align: center; padding: 50px; font-size: 18px; }
@@ -20,11 +20,12 @@
     
     /* Modal Popup CSS */
     .modal {display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);}
-    .modal-content {background-color: white; margin: 8% auto; padding: 30px; border-radius: 10px; width: 85%; max-width: 500px; text-align: left; box-shadow: 0 5px 15px rgba(0,0,0,0.3);}
+    .modal-content {background-color: white; margin: 8% auto; padding: 30px; border-radius: 10px; width: 85%; max-width: 400px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3);}
     .close {color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;}
     .close:hover {color: black;}
-    .modal h2 {color: #333; margin-top: 0; text-align: center;}
-    .modal p {font-size: 16px; margin: 12px 0;}
+    .modal h2 {color: #333; margin-top: 0;}
+    .modal p {font-size: 18px; margin: 15px 0;}
+    .btn-group {display: flex; gap: 12px; margin-top: 25px;}
     @media (max-width: 768px) {
       table {font-size: 11px;}
       td, th {padding: 6px;}
@@ -35,7 +36,7 @@
 
   <header>
     <h1>μStack Bus Booking System</h1>
-    <p>Click any row to view details - Devadath | μStack 2026</p>
+    <p>Click Bus No for details - Devadath | μStack 2026</p>
   </header>
 
   <button class="back-btn" onclick="window.location.href='index.html'">⬅ Back to Home</button>
@@ -52,7 +53,7 @@
   <div id="detailsModal" class="modal">
     <div class="modal-content">
       <span class="close" onclick="closeModal()">&times;</span>
-      <h2>🚌 Bus Full Details</h2>
+      <h2>🚌 Bus Details</h2>
       <div id="modalBody"></div>
     </div>
   </div>
@@ -67,27 +68,31 @@
         const total = bus.totalSeats || 40;
         const booked = bus.bookedSeats || 0;
         const available = total - booked;
-        const route = `${bus.from || 'Munnar'} to ${bus.to || 'Ooty'}`;
+        
+        // Government/Private കണ്ടുപിടിക്ക്
+        let busCategory = bus.type.toLowerCase().includes('ksrtc') || bus.type.toLowerCase().includes('government') ? 'Government' : 'Private';
         
         document.getElementById('modalBody').innerHTML = `
-          <p><b>Bus No:</b> ${bus.busNumber}</p>
-          <p><b>Route:</b> <span style="color:#007bff; font-size:18px; font-weight:bold;">${route}</span></p>
-          <p><b>Bus Timing:</b> ${bus.time}</p>
-          <p><b>Type:</b> ${bus.type || 'Normal Bus'}</p>
-          <p><b>Online Price:</b> ₹${bus.fare}</p>
-          <p><b>Spot Price:</b> ₹${bus.spotFare} <span style="color: orange;">+₹10 service charge</span></p>
-          <p><b>Total Seats:</b> ${total}</p>
-          <p><b>Booked Seats:</b> ${booked}</p>
-          <p><b>Available Seats:</b> <span style="color: ${available > 0 ? 'green' : 'red'}; font-weight: bold; font-size: 18px;">${available}</span></p>
-          <hr>
-          <p><b>Amenities:</b> Fan, Pushback seats, Charging point, WiFi, Water bottle</p>
+          <p style="font-size:22px;"><b>Bus No:</b> ${bus.busNumber}</p>
+          <p style="font-size:18px;"><b>Name:</b> ${bus.type}</p>
+          <p style="font-size:18px;"><b>Type:</b> ${busCategory}</p>
+          
+          <hr style="margin:25px 0;">
           
           ${available > 0 ? 
-            `<button onclick="bookSeat('${bus._id}')" style="background:#28a745;color:white;padding:12px 25px;border:none;border-radius:5px;font-size:16px;cursor:pointer;width:100%;margin-top:15px;">
-              🎫 Book Seat - Online ₹${bus.fare}
-            </button>` 
+            `<div class="btn-group">
+              <button onclick="bookSeat('${bus._id}', '${bus.busNumber}', ${bus.fare}, 'online', '${bus.type}')" 
+                style="background:#28a745;color:white;padding:16px;border:none;border-radius:8px;font-size:15px;cursor:pointer;flex:1;">
+                🎫 Online<br><b>₹${bus.fare}</b>
+              </button>
+              
+              <button onclick="bookSeat('${bus._id}', '${bus.busNumber}', ${bus.spotFare}, 'offline', '${bus.type}')" 
+                style="background:#ff9800;color:white;padding:16px;border:none;border-radius:8px;font-size:15px;cursor:pointer;flex:1;">
+                🚌 Offline<br><b>₹${bus.spotFare}</b>
+              </button>
+            </div>` 
             : 
-            `<button disabled style="background:#dc3545;color:white;padding:12px 25px;border:none;border-radius:5px;font-size:16px;width:100%;margin-top:15px;">
+            `<button disabled style="background:#dc3545;color:white;padding:16px;border:none;border-radius:8px;font-size:16px;width:100%;">
               ❌ No Seats Available
             </button>`
           }
@@ -146,8 +151,8 @@
           const route = `${bus.from || 'Munnar'} to ${bus.to || 'Ooty'}`;
           
           table += `
-            <tr onclick="showDetails('${bus._id}')">
-              <td>${bus.busNumber}</td>
+            <tr>
+              <td class="busno-cell" onclick="showDetails('${bus._id}')">${bus.busNumber}</td>
               <td>${route}</td>
               <td>${bus.time}</td>
               <td class="${isFull ? 'full' : 'available'}">${available}/${total}</td>
@@ -172,17 +177,22 @@
 
     loadBuses();
 
-    async function bookSeat(busId) {
-      if(!confirm('Online-ൽ book ചെയ്യണോ? ₹10 discount കിട്ടും ✅')) return;
+    // Updated bookSeat with ticket print
+    async function bookSeat(busId, busNo, fare, type, busType) {
+      if(!confirm(`${type.toUpperCase()} Booking?\nBus: ${busNo}\nPrice: ₹${fare}`)) return;
       
       try {
-        const res = await fetch(`https://bus-backend-rtut.onrender.com/api/book/${busId}`, {
+        const res = await fetch(`https://bus-backend-rtut.onrender.com/api/book/${busId}?type=${type}`, {
           method: 'PUT'
         });
         const data = await res.json();
         
         if(res.ok) {
-          alert('🎉 Seat booked successfully! \n' + data.msg);
+          alert(`✅ ${type.toUpperCase()} Ticket Booked!\nBus: ${busNo}\nFare: ₹${fare}`);
+          
+          // Ticket print ചെയ്യ്
+          printTicket(busNo, fare, 'A1', type, busType);
+          
           closeModal();
           loadBuses();
         } else {
@@ -191,6 +201,48 @@
       } catch(err) {
         alert('Error: ' + err.message);
       }
+    }
+
+    // Ticket Print Function
+    function printTicket(busNo, fare, seatNo, type, busType) {
+      let today = new Date().toLocaleDateString();
+      let time = new Date().toLocaleTimeString();
+      
+      let ticketHTML = `
+        <html>
+          <head>
+            <title>μStack Bus Ticket</title>
+            <style>
+              body { font-family: Arial; padding: 20px; background: #f4f4f4; }
+              .ticket { border: 3px dashed #007bff; padding: 25px; max-width: 320px; margin: auto; background: white; border-radius: 10px; }
+              h2 { text-align: center; color: #007bff; margin: 0 0 15px 0; }
+              .row { margin: 12px 0; font-size: 16px; }
+              .label { font-weight: bold; color: #333; }
+              hr { border: 1px dashed #ccc; }
+            </style>
+          </head>
+          <body>
+            <div class="ticket">
+              <h2>🚌 μSTACK BUS TICKET</h2>
+              <hr>
+              <div class="row"><span class="label">Bus No:</span> ${busNo}</div>
+              <div class="row"><span class="label">Name:</span> ${busType}</div>
+              <div class="row"><span class="label">Seat No:</span> ${seatNo}</div>
+              <div class="row"><span class="label">Booking:</span> ${type.toUpperCase()}</div>
+              <div class="row"><span class="label">Fare:</span> ₹${fare}</div>
+              <div class="row"><span class="label">Date:</span> ${today}</div>
+              <div class="row"><span class="label">Time:</span> ${time}</div>
+              <hr>
+              <p style="text-align:center; font-size:12px; color: gray;">Created by Devadath | μStack 2026</p>
+            </div>
+            <script>window.onload = function(){ window.print(); }</script>
+          </body>
+        </html>
+      `;
+      
+      let printWindow = window.open('', '_blank');
+      printWindow.document.write(ticketHTML);
+      printWindow.document.close();
     }
   </script>
 </body>
