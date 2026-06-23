@@ -67,11 +67,11 @@
         const total = bus.totalSeats || 40;
         const booked = bus.bookedSeats || 0;
         const available = total - booked;
-        const route = `${bus.from || 'Kochi'} → ${bus.to || 'Trivandrum'}`;
+        const route = `${bus.from || 'Munnar'} to ${bus.to || 'Ooty'}`;
         
         document.getElementById('modalBody').innerHTML = `
           <p><b>Bus No:</b> ${bus.busNumber}</p>
-          <p><b>Route:</b> ${route}</p>
+          <p><b>Route:</b> <span style="color:#007bff; font-size:18px; font-weight:bold;">${route}</span></p>
           <p><b>Bus Timing:</b> ${bus.time}</p>
           <p><b>Type:</b> ${bus.type || 'Normal Bus'}</p>
           <p><b>Online Price:</b> ₹${bus.fare}</p>
@@ -128,7 +128,7 @@
                 <th>Bus No</th>
                 <th>Route</th>
                 <th>Bus Timing</th>
-                <th>Available Seats Count</th>
+                <th>Available Seats</th>
                 <th>Ticket Price Type</th>
                 <th>Total Seats</th>
                 <th>Booked Seats</th>
@@ -143,7 +143,7 @@
           const booked = bus.bookedSeats || 0;
           const available = total - booked;
           const isFull = available <= 0;
-          const route = `${bus.from || 'Kochi'} → ${bus.to || 'Trivandrum'}`;
+          const route = `${bus.from || 'Munnar'} to ${bus.to || 'Ooty'}`;
           
           table += `
             <tr onclick="showDetails('${bus._id}')">
@@ -184,7 +184,7 @@
         if(res.ok) {
           alert('🎉 Seat booked successfully! \n' + data.msg);
           closeModal();
-          loadBuses(); // Table refresh ചെയ്യും
+          loadBuses();
         } else {
           alert('❌ ' + data.error);
         }
