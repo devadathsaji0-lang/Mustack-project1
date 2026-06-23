@@ -15,6 +15,8 @@
     .full { color: red; font-weight: bold; }
     .available { color: green; font-weight: bold; }
     .loading { text-align: center; padding: 50px; font-size: 18px; }
+    button:hover:not(:disabled) {opacity: 0.9; transform: scale(1.02);}
+    button:disabled {cursor: not-allowed;}
     
     /* Modal Popup CSS */
     .modal {display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);}
@@ -72,13 +74,23 @@
           <p><b>Route:</b> ${route}</p>
           <p><b>Bus Timing:</b> ${bus.time}</p>
           <p><b>Type:</b> ${bus.type || 'Normal Bus'}</p>
-          <p><b>Online Price:</b> ₹${bus.fare || 0}</p>
-          <p><b>Spot Price:</b> ₹${(bus.fare || 0) + 10} <span style="color: orange;">+₹10 service charge</span></p>
+          <p><b>Online Price:</b> ₹${bus.fare}</p>
+          <p><b>Spot Price:</b> ₹${bus.spotFare} <span style="color: orange;">+₹10 service charge</span></p>
           <p><b>Total Seats:</b> ${total}</p>
           <p><b>Booked Seats:</b> ${booked}</p>
           <p><b>Available Seats:</b> <span style="color: ${available > 0 ? 'green' : 'red'}; font-weight: bold; font-size: 18px;">${available}</span></p>
           <hr>
           <p><b>Amenities:</b> Fan, Pushback seats, Charging point, WiFi, Water bottle</p>
+          
+          ${available > 0 ? 
+            `<button onclick="bookSeat('${bus._id}')" style="background:#28a745;color:white;padding:12px 25px;border:none;border-radius:5px;font-size:16px;cursor:pointer;width:100%;margin-top:15px;">
+              🎫 Book Seat - Online ₹${bus.fare}
+            </button>` 
+            : 
+            `<button disabled style="background:#dc3545;color:white;padding:12px 25px;border:none;border-radius:5px;font-size:16px;width:100%;margin-top:15px;">
+              ❌ No Seats Available
+            </button>`
+          }
         `;
         
         document.getElementById('detailsModal').style.display = 'block';
@@ -140,8 +152,8 @@
               <td>${bus.time}</td>
               <td class="${isFull ? 'full' : 'available'}">${available}/${total}</td>
               <td>
-                Online: ₹${bus.fare || 0}<br>
-                Spot: ₹${(bus.fare || 0) + 10}
+                Online: ₹${bus.fare}<br>
+                Spot: ₹${bus.spotFare}
               </td>
               <td>${total}</td>
               <td>${booked}</td>
@@ -159,7 +171,27 @@
     }
 
     loadBuses();
-  </script>
 
+    async function bookSeat(busId) {
+      if(!confirm('Online-ൽ book ചെയ്യണോ? ₹10 discount കിട്ടും ✅')) return;
+      
+      try {
+        const res = await fetch(`https://bus-backend-rtut.onrender.com/api/book/${busId}`, {
+          method: 'PUT'
+        });
+        const data = await res.json();
+        
+        if(res.ok) {
+          alert('🎉 Seat booked successfully! \n' + data.msg);
+          closeModal();
+          loadBuses(); // Table refresh ചെയ്യും
+        } else {
+          alert('❌ ' + data.error);
+        }
+      } catch(err) {
+        alert('Error: ' + err.message);
+      }
+    }
+  </script>
 </body>
 </html>
