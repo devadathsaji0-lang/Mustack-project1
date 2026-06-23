@@ -72,7 +72,8 @@
           <p><b>Route:</b> ${route}</p>
           <p><b>Bus Timing:</b> ${bus.time}</p>
           <p><b>Type:</b> ${bus.type || 'Normal Bus'}</p>
-          <p><b>Ticket Price:</b> ₹${bus.fare || 0}</p>
+          <p><b>Online Price:</b> ₹${bus.fare || 0}</p>
+          <p><b>Spot Price:</b> ₹${(bus.fare || 0) + 10} <span style="color: orange;">+₹10 service charge</span></p>
           <p><b>Total Seats:</b> ${total}</p>
           <p><b>Booked Seats:</b> ${booked}</p>
           <p><b>Available Seats:</b> <span style="color: ${available > 0 ? 'green' : 'red'}; font-weight: bold; font-size: 18px;">${available}</span></p>
@@ -138,7 +139,10 @@
               <td>${route}</td>
               <td>${bus.time}</td>
               <td class="${isFull ? 'full' : 'available'}">${available}/${total}</td>
-              <td>Normal ₹${bus.fare || 0}</td>
+              <td>
+                Online: ₹${bus.fare || 0}<br>
+                Spot: ₹${(bus.fare || 0) + 10}
+              </td>
               <td>${total}</td>
               <td>${booked}</td>
               <td>${bus.type || 'Normal'}</td>
