@@ -7,32 +7,36 @@
   <style>
     body {background-color: #f0f0f0; font-family: Arial; padding: 20px; margin: 0;}
     h1, p { text-align: center; color: #333; }
-    .back-btn {background: #6c757d; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 20px;}
+   .back-btn {background: #6c757d; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 20px;}
+
+    /* 🔥 Card styles add ചെയ്തു */
+    #busCards {display:flex; flex-wrap:wrap; gap:20px; justify-content:center; padding:20px; min-height:400px;}
+   .bus-card {width:300px; border:2px solid #ddd; border-radius:12px; overflow:hidden; cursor:pointer; box-shadow:0 4px 8px rgba(0,0,0,0.1); transition: transform 0.2s;}
+   .bus-card:hover {transform: scale(1.03);}
+
     table {width: 100%; border-collapse: collapse; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-top: 20px;}
     th {background-color: #333; color: white; padding: 12px; text-align: center;}
     td {padding: 10px; border: 1px solid #ddd; text-align: center;}
-    .busno-cell {color: blue; font-weight: bold; cursor: pointer; text-decoration: underline;}
-    .busno-cell:hover {background: #e8f4f8;}
-    .full { color: red; font-weight: bold; }
-    .available { color: green; font-weight: bold; }
-    .loading { text-align: center; padding: 50px; font-size: 18px; }
-    button:hover:not(:disabled) {opacity: 0.9; transform: scale(1.02);}
-    button:disabled {cursor: not-allowed;}
-    
-    .modal {display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); overflow-y: auto;}
-    .modal-content {background-color: white; margin: 5% auto; padding: 25px; border-radius: 12px; width: 90%; max-width: 420px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.3);}
-    .close {color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;}
-    .close:hover {color: black;}
-    .modal h2 {color: #007bff; margin-top: 0;}
-    .modal p {font-size: 18px; margin: 12px 0;}
-    .btn-group {display: flex; gap: 12px; margin-top: 20px;}
-    .input-group {margin: 15px 0; text-align: left;}
-    .input-group label {display: block; font-weight: bold; margin-bottom: 5px; color: #333;}
-    .input-group input, .input-group select {width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 16px; box-sizing: border-box;}
-    .input-group input:focus {border-color: #007bff; outline: none;}
+   .busno-cell {color: blue; font-weight: bold; cursor: pointer; text-decoration: underline;}
+   .busno-cell:hover {background: #e8f4f8;}
+   .full { color: red; font-weight: bold; }
+   .available { color: green; font-weight: bold; }
+   .loading { text-align: center; padding: 50px; font-size: 18px; }
+
+   .modal {display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); overflow-y: auto;}
+   .modal-content {background-color: white; margin: 5% auto; padding: 25px; border-radius: 12px; width: 90%; max-width: 420px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.3);}
+   .close {color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;}
+   .close:hover {color: black;}
+   .modal h2 {color: #007bff; margin-top: 0;}
+   .modal p {font-size: 18px; margin: 12px 0;}
+   .btn-group {display: flex; gap: 12px; margin-top: 20px;}
+   .input-group {margin: 15px 0; text-align: left;}
+   .input-group label {display: block; font-weight: bold; margin-bottom: 5px; color: #333;}
+   .input-group input,.input-group select {width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 16px; box-sizing: border-box;}
+   .input-group input:focus {border-color: #007bff; outline: none;}
+
     @media (max-width: 768px) {
-      table {font-size: 11px;}
-      td, th {padding: 6px;}
+     .bus-card {width: 90%;}
     }
   </style>
 </head>
@@ -40,13 +44,40 @@
 
   <header>
     <h1>μStack Bus Booking System</h1>
-    <p>Click Bus No for details - Devadath | μStack 2026</p>
+    <p>Click Bus Card for details - Devadath | μStack 2026</p>
   </header>
 
   <button class="back-btn" onclick="window.location.href='index.html'">⬅ Back to Home</button>
 
   <main id="tableContainer">
-    <p class="loading">Bus data load ആവുന്നു...</p>
+    <!-- 🔥 ആദ്യം Dummy Cards കാണിക്കും -->
+    <div id="busCards">
+      <!-- Card 1: Super Fast -->
+      <div class="bus-card" onclick="showDetails(0)">
+        <div style="background:linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding:40px; text-align:center; color:white; font-size:24px; font-weight:bold;">
+          🚌 SUPER FAST
+        </div>
+        <div style="padding:15px; text-align:center;">
+          <p><b>Name:</b> Super Fast</p>
+          <p><b>Route:</b> Munnar to Ooty</p>
+          <p><b>Type:</b> Government</p>
+          <button style="background:green; color:white; padding:10px 20px; border:none; border-radius:6px; margin-top:10px;">📢 Horn Adikku</button>
+        </div>
+      </div>
+
+      <!-- Card 2: Kallada G1 -->
+      <div class="bus-card" onclick="showDetails(1)">
+        <div style="background:linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding:40px; text-align:center; color:white; font-size:24px; font-weight:bold;">
+          🚌 KALLADA G1
+        </div>
+        <div style="padding:15px; text-align:center;">
+          <p><b>Name:</b> Kallada G1</p>
+          <p><b>Route:</b> Kottayam to Bangalore</p>
+          <p><b>Type:</b> Private AC Sleeper</p>
+          <button style="background:green; color:white; padding:10px 20px; border:none; border-radius:6px; margin-top:10px;">📢 Horn Adikku</button>
+        </div>
+      </div>
+    </div>
   </main>
 
   <footer>
@@ -63,66 +94,117 @@
 
   <script>
     const API_URL = 'https://bus-backend-rtut.onrender.com/api/buses';
+    let buses = []; // Global array
     let currentBus = null;
 
-    async function showDetails(busId) {
+    // 🔥 Dummy data - ആദ്യം കാണിക്കാൻ
+    let dummyBuses = [
+      {name: "Super Fast", from: "Munnar", to: "Ooty", type: "Government", busNumber: "KL-01-1111", time: "06:00 AM", totalSeats: 40, bookedSeats: 10, fare: 250, spotFare: 200, _id: "dummy1"},
+      {name: "Kallada G1", from: "Kottayam", to: "Bangalore", type: "Private AC Sleeper", busNumber: "KL-07-2222", time: "09:30 PM", totalSeats: 35, bookedSeats: 5, fare: 800, spotFare: 750, _id: "dummy2"}
+    ];
+
+    // Page load ആവുമ്പോൾ
+    window.onload = loadBuses;
+
+    async function loadBuses() {
+      // Step 1: Dummy cards already HTML-ൽ ഉണ്ട്
+
       try {
-        const res = await fetch(`${API_URL}/${busId}`);
-        const bus = await res.json();
-        currentBus = bus;
-        
-        const total = bus.totalSeats || 40;
-        const booked = bus.bookedSeats || 0;
-        const available = total - booked;
-        
-        // 🔥 Safe check - type ഇല്ലെങ്കിൽ crash ആവില്ല
-        let busTypeLower = (bus.type || '').toLowerCase();
-        let busName = bus.type || 'Normal Bus';
-        let busCategory = busTypeLower.includes('ksrtc') || busTypeLower.includes('government') ? 'Government' : 'Private';
-        
-        let seatOptions = '';
-        for(let i = 1; i <= available && i <= 40; i++) {
-          seatOptions += `<option value="A${i}">A${i}</option>`;
+        const res = await fetch(API_URL);
+        buses = await res.json();
+
+        // Step 2: Real data കിട്ടിയാൽ dummy മാറ്റി real cards ഇട്
+        if(buses.length > 0) {
+          renderBuses(buses);
         }
-        
-        document.getElementById('modalBody').innerHTML = `
-          <p style="font-size:22px;"><b>Bus No:</b> ${bus.busNumber}</p>
-          <p style="font-size:18px;"><b>Name:</b> ${busName}</p>
-          <p style="font-size:18px;"><b>Type:</b> ${busCategory}</p>
-          <p style="font-size:16px; color: green;"><b>Available:</b> ${available}/${total} seats</p>
-          
-          ${available > 0 ? 
-            `<div class="input-group">
-              <label>Passenger Name:</label>
-              <input type="text" id="passengerName" placeholder="Enter your name" required>
-            </div>
-            <div class="input-group">
-              <label>Select Seat:</label>
-              <select id="seatSelect">${seatOptions}</select>
-            </div>
-            <hr style="margin:20px 0;">
-            <div class="btn-group">
-              <button onclick="bookSeat('${bus._id}', '${bus.busNumber}', ${bus.fare}, 'online', '${busName}')" 
-                style="background:#28a745;color:white;padding:16px;border:none;border-radius:8px;font-size:15px;cursor:pointer;flex:1;">
-                🎫 Online<br><b>₹${bus.fare}</b>
-              </button>
-              
-              <button onclick="bookSeat('${bus._id}', '${bus.busNumber}', ${bus.spotFare}, 'offline', '${busName}')" 
-                style="background:#ff9800;color:white;padding:16px;border:none;border-radius:8px;font-size:15px;cursor:pointer;flex:1;">
-                🚌 Offline<br><b>₹${bus.spotFare}</b>
-              </button>
-            </div>` 
-            : 
-            `<button disabled style="background:#dc3545;color:white;padding:16px;border:none;border-radius:8px;font-size:16px;width:100%; margin-top:20px;">
-              ❌ No Seats Available
-            </button>`
-          }
-        `;
-        
-        document.getElementById('detailsModal').style.display = 'block';
-      } catch (err) {
-        alert('Error loading details: ' + err.message);
+      } catch(e) {
+        console.log("API error - dummy cards കാണിക്കും");
+        buses = dummyBuses; // API fail ആയാൽ dummy use ചെയ്യ്
       }
+    }
+
+    function renderBuses(busList) {
+      let container = document.getElementById('busCards');
+      container.innerHTML = ''; // Dummy clear ചെയ്യ്
+
+      busList.forEach((bus, index) => {
+        let gradient = (bus.type || '').toLowerCase().includes('ac')?
+          'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' :
+          'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+
+        let total = bus.totalSeats || 40;
+        let booked = bus.bookedSeats || 0;
+        let available = total - booked;
+
+        container.innerHTML += `
+          <div class="bus-card" onclick="showDetails(${index})">
+            <div style="background:${gradient}; padding:40px; text-align:center; color:white; font-size:24px; font-weight:bold;">
+              🚌 ${bus.busNumber}
+            </div>
+            <div style="padding:15px; text-align:center;">
+              <p><b>Name:</b> ${bus.name || bus.busNumber}</p>
+              <p><b>Route:</b> ${bus.from || 'Munnar'} → ${bus.to || 'Ooty'}</p>
+              <p><b>Type:</b> ${bus.type || 'Normal'}</p>
+              <p style="color:${available > 0? 'green' : 'red'}"><b>Seats:</b> ${available}/${total}</p>
+              <button style="background:green; color:white; padding:10px 20px; border:none; border-radius:6px; margin-top:10px;">📢 Horn Adikku</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    async function showDetails(index) {
+      currentBus = buses[index] || dummyBuses[index];
+      const bus = currentBus;
+
+      const total = bus.totalSeats || 40;
+      const booked = bus.bookedSeats || 0;
+      const available = total - booked;
+
+      let busTypeLower = (bus.type || '').toLowerCase();
+      let busName = bus.name || bus.busNumber || 'Normal Bus';
+      let busCategory = busTypeLower.includes('ksrtc') || busTypeLower.includes('government')? 'Government' : 'Private';
+
+      let seatOptions = '';
+      for(let i = 1; i <= available && i <= 40; i++) {
+        seatOptions += `<option value="A${i}">A${i}</option>`;
+      }
+
+      document.getElementById('modalBody').innerHTML = `
+        <p style="font-size:22px;"><b>Bus No:</b> ${bus.busNumber}</p>
+        <p style="font-size:18px;"><b>Name:</b> ${busName}</p>
+        <p style="font-size:18px;"><b>Type:</b> ${busCategory}</p>
+        <p style="font-size:16px; color: green;"><b>Available:</b> ${available}/${total} seats</p>
+
+        ${available > 0?
+          `<div class="input-group">
+            <label>Passenger Name:</label>
+            <input type="text" id="passengerName" placeholder="Enter your name" required>
+          </div>
+          <div class="input-group">
+            <label>Select Seat:</label>
+            <select id="seatSelect">${seatOptions}</select>
+          </div>
+          <hr style="margin:20px 0;">
+          <div class="btn-group">
+            <button onclick="bookSeat('${bus._id}', '${bus.busNumber}', ${bus.fare}, 'online', '${busName}')"
+              style="background:#28a745;color:white;padding:16px;border:none;border-radius:8px;font-size:15px;cursor:pointer;flex:1;">
+              🎫 Online<br><b>₹${bus.fare}</b>
+            </button>
+
+            <button onclick="bookSeat('${bus._id}', '${bus.busNumber}', ${bus.spotFare}, 'offline', '${busName}')"
+              style="background:#ff9800;color:white;padding:16px;border:none;border-radius:8px;font-size:15px;cursor:pointer;flex:1;">
+              🚌 Offline<br><b>₹${bus.spotFare}</b>
+            </button>
+          </div>`
+          :
+          `<button disabled style="background:#dc3545;color:white;padding:16px;border:none;border-radius:8px;font-size:16px;width:100%; margin-top:20px;">
+            ❌ No Seats Available
+          </button>`
+        }
+      `;
+
+      document.getElementById('detailsModal').style.display = 'block';
     }
 
     function closeModal() {
@@ -137,84 +219,31 @@
       }
     }
 
-    async function loadBuses() {
-      const container = document.getElementById('tableContainer');
-      try {
-        const res = await fetch(API_URL);
-        const buses = await res.json();
-
-        if (buses.length === 0) {
-          container.innerHTML = '<p class="loading">MongoDB-ൽ bus data ഇല്ല bro. Add ചെയ്യ്!</p>';
-          return;
-        }
-
-        let table = `
-          <table>
-            <thead>
-              <tr>
-                <th>Bus No</th>
-                <th>Route</th>
-                <th>Time</th>
-                <th>Available</th>
-                <th>Price</th>
-                <th>Type</th>
-              </tr>
-            </thead>
-            <tbody>
-        `;
-
-        buses.forEach(bus => {
-          const total = bus.totalSeats || 40;
-          const booked = bus.bookedSeats || 0;
-          const available = total - booked;
-          const isFull = available <= 0;
-          const route = `${bus.from || 'Munnar'} → ${bus.to || 'Ooty'}`;
-          
-          table += `
-            <tr>
-              <td class="busno-cell" onclick="showDetails('${bus._id}')">${bus.busNumber}</td>
-              <td>${route}</td>
-              <td>${bus.time}</td>
-              <td class="${isFull ? 'full' : 'available'}">${available}/${total}</td>
-              <td>
-                Online: ₹${bus.fare}<br>
-                Spot: ₹${bus.spotFare}
-              </td>
-              <td>${bus.type || 'Normal'}</td>
-            </tr>
-          `;
-        });
-
-        table += `</tbody></table>`;
-        container.innerHTML = table;
-
-      } catch (err) {
-        container.innerHTML = `<p style="color:red; text-align:center">Error: ${err.message}. Backend check ചെയ്യ്!</p>`;
-      }
-    }
-
-    loadBuses();
-
     async function bookSeat(busId, busNo, fare, type, busType) {
+      if(busId.startsWith('dummy')) {
+        alert('⚠️ Dummy bus ആണ് bro. Real bus select ചെയ്യ്!');
+        return;
+      }
+
       const passengerName = document.getElementById('passengerName').value.trim();
       const seatNo = document.getElementById('seatSelect').value;
-      
+
       if(!passengerName) {
         alert('❌ Passenger name enter ചെയ്യ് bro');
         return;
       }
-      
+
       if(!confirm(`${type.toUpperCase()} Booking?\nBus: ${busNo}\nSeat: ${seatNo}\nName: ${passengerName}\nPrice: ₹${fare}`)) return;
-      
+
       try {
         const res = await fetch(`https://bus-backend-rtut.onrender.com/api/book/${busId}?type=${type}`, {
           method: 'PUT'
         });
         const data = await res.json();
-        
+
         if(res.ok) {
           alert(`✅ ${type.toUpperCase()} Ticket Booked!\nBus: ${busNo}\nSeat: ${seatNo}\nName: ${passengerName}`);
-          
+
           printTicket(busNo, fare, seatNo, type, busType, passengerName);
           closeModal();
           setTimeout(() => loadBuses(), 1000);
@@ -230,7 +259,7 @@
       let today = new Date().toLocaleDateString();
       let time = new Date().toLocaleTimeString();
       let ticketId = 'μS' + Date.now().toString().slice(-6);
-      
+
       let ticketHTML = `
         <html>
           <head>
@@ -238,10 +267,10 @@
             <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"><\/script>
             <style>
               body { font-family: Arial; padding: 20px; background: #f4f4f4; }
-              .ticket { border: 3px dashed #007bff; padding: 25px; max-width: 320px; margin: auto; background: white; border-radius: 10px; }
+             .ticket { border: 3px dashed #007bff; padding: 25px; max-width: 320px; margin: auto; background: white; border-radius: 10px; }
               h2 { text-align: center; color: #007bff; margin: 0 0 15px 0; }
-              .row { margin: 12px 0; font-size: 16px; }
-              .label { font-weight: bold; color: #333; }
+             .row { margin: 12px 0; font-size: 16px; }
+             .label { font-weight: bold; color: #333; }
               hr { border: 1px dashed #ccc; }
               #qrcode { text-align: center; margin-top: 15px; }
             </style>
@@ -272,7 +301,7 @@
           </body>
         </html>
       `;
-      
+
       let printWindow = window.open('', '_blank');
       printWindow.document.write(ticketHTML);
       printWindow.document.close();
